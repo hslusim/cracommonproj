@@ -1,140 +1,148 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
-#include <algorithm>
+#include "attendance.h"
 
-using namespace std;
-
-struct Node {
-    string w;
-    string wk;
-};
-
-map<string, int> id1;
-int id_cnt = 0;
-
-//dat[사용자ID][요일]
-int dat[100][100];
-int points[100];
-int grade[100];
-string names[100];
-
-int wed[100];
-int weeken[100];
-
-void input2(string w, string wk) {
-    //ID 부여
-    if (id1.count(w) == 0) {
-        id1.insert({ w, ++id_cnt });
-
-        if (w == "Daisy") {
-            int debug = 1;
-        }
-
-        names[id_cnt] = w;
-    }
-    int id2 = id1[w];
-
-    //디버깅용
-    if (w == "Daisy") {
-        int debug = 1;
-    }
-
-
-    int add_point = 0;
-    int index = 0;
-    if (wk == "monday") {
-        index = 0;
-        add_point++;
-    }
-    if (wk == "tuesday") {
-        index = 1;
-        add_point++;
-    }
-    if (wk == "wednesday") {
-        index = 2;
-        add_point += 3;
-        wed[id2] += 1;
-    }
-    if (wk == "thursday") {
-        index = 3;
-        add_point++;
-    }
-    if (wk == "friday") {
-        index = 4;
-        add_point++;
-    }
-    if (wk == "saturday") {
-        index = 5;
-        add_point += 2;
-        weeken[id2] += 1;
-    }
-    if (wk == "sunday") {
-        index = 6;
-        add_point += 2;
-        weeken[id2] += 1;
-    }
-
-    //사용자ID별 요일 데이터에 1씩 증가
-    dat[id2][index] += 1;
-    points[id2] += add_point;
+void initAttendanceData(string playerName, string dayOfWeek) {
+    setPlayerId(playerName);
+    setAttendCntDaybyId(playerIdMap[playerName], dayOfWeek);
+    increasePoint(playerIdMap[playerName], dayOfWeek);
 }
 
-void input() {
-    ifstream fin{ "attendance_weekday_500.txt" }; //500개 데이터 입력
-    for (int i = 0; i < 500; i++) {
-        string t1, t2;
-        fin >> t1 >> t2;
-        input2(t1, t2);
+inline void increasePoint(int targetId, string& dayOfWeek)
+{
+    if (targetId > playerIdCnt) {
+        cout << "Invalid player ID" << endl;
+        return;
     }
 
-    for (int i = 1; i <= id_cnt; i++) {
-        if (dat[i][2] > 9) {
-            points[i] += 10;
-        }
+    if (dayOfWeek == WED) {
+        playerPoint[targetId] += 3;
+        attendCntWednesday[targetId] += 1;
+    }
+    else if (dayOfWeek == SAT || dayOfWeek == SUN) {
+        playerPoint[targetId] += 2;
+        attendCntWeekend[targetId] += 1;
+    }
+    else { playerPoint[targetId] += 1; }
+}
 
-        if (dat[i][5] + dat[i][6] > 9) {
-            points[i] += 10;
-        }
+void setAttendCntDaybyId(int targetId, string& dayOfWeek)
+{
+    if (targetId > playerIdCnt) {
+        cout << "Invalid member ID" << endl;
+        return;
+    }
 
-        if (points[i] >= 50) {
-            grade[i] = 1;
+    for (int i = 0; i < 7; i++) {
+        if (arrDayOfWeek[i].compare(dayOfWeek) == 0) {
+            attendCntDayById[targetId][i] += 1;
+            break;
         }
-        else if (points[i] >= 30) {
-            grade[i] = 2;
-        }
-        else {
-            grade[i] = 0;
-        }
+    }
+}
 
-        cout << "NAME : " << names[i] << ", ";
-        cout << "POINT : " << points[i] << ", ";
+void setPlayerId(std::string& memberName)
+{
+    if (playerIdMap.count(memberName) == 0) {
+        playerIdMap.insert({ memberName, ++playerIdCnt });
+        playerNameArr[playerIdCnt] = memberName;
+    }
+}
+
+void processAttendSystem()
+{
+    handleInputData();
+    updataBonusPoint();
+    updateMemberGrade();
+    updateRemovePlayer();
+    logPrintResult();
+    logPrintRemovePlayer();
+}
+
+void logPrintRemovePlayer()
+{
+    std::cout << "\n";
+    std::cout << "Removed player\n";
+    std::cout << "==============\n";
+    for (int i = 1; i <= playerIdCnt; i++) {
+
+        if (playerRemoved[i] == 1) {
+            std::cout << playerNameArr[i] << "\n";
+        }
+    }
+}
+
+void updateRemovePlayer()
+{
+    for (int i = 1; i <= playerIdCnt; i++) {
+
+        if (isRemovePlayer(i)) {
+            playerRemoved[i] = 1;
+        }
+    }
+}
+
+bool isRemovePlayer(int i)
+{
+    return playerGrade[i] != GOLD && playerGrade[i] != SILVER && attendCntWednesday[i] == 0 && attendCntWeekend[i] == 0;
+}
+
+void logPrintResult()
+{
+    for (int i = 1; i <= playerIdCnt; i++) {
+        cout << "NAME : " << playerNameArr[i] << ", ";
+        cout << "POINT : " << playerPoint[i] << ", ";
         cout << "GRADE : ";
 
-        if (grade[i] == 1) {
+        if (playerGrade[i] == GOLD) {
             cout << "GOLD" << "\n";
         }
-        else if (grade[i] == 2) {
+        else if (playerGrade[i] == SILVER) {
             cout << "SILVER" << "\n";
         }
         else {
             cout << "NORMAL" << "\n";
         }
     }
+}
 
-    std::cout << "\n";
-    std::cout << "Removed player\n";
-    std::cout << "==============\n";
-    for (int i = 1; i <= id_cnt; i++) {
+void updataBonusPoint()
+{
+    for (int i = 1; i <= playerIdCnt; i++) {
+        if (attendCntDayById[i][2] > 9) {
+            playerPoint[i] += 10;
+        }
 
-        if (grade[i] != 1 && grade[i] != 2 && wed[i] == 0 && weeken[i] == 0) {
-            std::cout << names[i] << "\n";
+        if (attendCntDayById[i][5] + attendCntDayById[i][6] > 9) {
+            playerPoint[i] += 10;
         }
     }
 }
 
-int main() {
-    input();
+void updateMemberGrade()
+{
+    for (int i = 1; i <= playerIdCnt; i++) {
+        if (playerPoint[i] >= 50) {
+            playerGrade[i] = GOLD;
+        }
+        else if (playerPoint[i] >= 30) {
+            playerGrade[i] = SILVER;
+        }
+        else {
+            playerGrade[i] = NORMAL;
+        }
+    }
+}
+
+void handleInputData()
+{
+    ifstream fin{ "attendance_weekday_500.txt" };
+    for (int i = 0; i < MAX_ATTENDANCE_DATA_LEN; i++) {
+        string playerName, dayOfWeek;
+        fin >> playerName >> dayOfWeek;
+        initAttendanceData(playerName, dayOfWeek);
+    }
+}
+
+int main() 
+{
+      processAttendSystem();
 }
