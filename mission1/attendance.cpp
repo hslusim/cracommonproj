@@ -6,7 +6,7 @@ void initAttendanceData(string playerName, string dayOfWeek) {
     increasePoint(playerIdMap[playerName], dayOfWeek);
 }
 
-inline void increasePoint(int targetId, string& dayOfWeek)
+void increasePoint(int targetId, string dayOfWeek)
 {
     if (targetId > playerIdCnt) {
         cout << "Invalid player ID" << endl;
@@ -24,10 +24,10 @@ inline void increasePoint(int targetId, string& dayOfWeek)
     else { playerPoint[targetId] += 1; }
 }
 
-void setAttendCntDaybyId(int targetId, string& dayOfWeek)
+void setAttendCntDaybyId(int targetId, string dayOfWeek)
 {
     if (targetId > playerIdCnt) {
-        cout << "Invalid member ID" << endl;
+        cout << "Invalid player ID" << endl;
         return;
     }
 
@@ -39,11 +39,11 @@ void setAttendCntDaybyId(int targetId, string& dayOfWeek)
     }
 }
 
-void setPlayerId(std::string& memberName)
+void setPlayerId(string playerName)
 {
-    if (playerIdMap.count(memberName) == 0) {
-        playerIdMap.insert({ memberName, ++playerIdCnt });
-        playerNameArr[playerIdCnt] = memberName;
+    if (playerIdMap.count(playerName) == 0) {
+        playerIdMap.insert({ playerName, ++playerIdCnt });
+        playerNameArr[playerIdCnt] = playerName;
     }
 }
 
@@ -51,7 +51,7 @@ void processAttendSystem()
 {
     handleInputData();
     updataBonusPoint();
-    updateMemberGrade();
+    updatePlayerGrade();
     updateRemovePlayer();
     logPrintResult();
     logPrintRemovePlayer();
@@ -117,7 +117,7 @@ void updataBonusPoint()
     }
 }
 
-void updateMemberGrade()
+void updatePlayerGrade()
 {
     for (int i = 1; i <= playerIdCnt; i++) {
         if (playerPoint[i] >= 50) {
@@ -142,7 +142,7 @@ void handleInputData()
     }
 }
 
-int main() 
+int main()
 {
-      processAttendSystem();
+    processAttendSystem();
 }

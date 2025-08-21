@@ -1,11 +1,13 @@
+#ifndef __ATTENDANCE_H__
+#define __ATTENDANCE_H__
 #pragma once
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <map>
 #include <algorithm>
-#include "gmock/gmock.h"
 
 using std::cout;
 using std::string;
@@ -42,13 +44,15 @@ int attendCntWednesday[100];
 int attendCntWeekend[100];
 string arrDayOfWeek[7] = { MON, TUE, WED, THU, FRI, SAT, SUN };
 
-void setPlayerId(std::string& memberName);
+void setPlayerId(string playerName);
 void updateRemovePlayer();
 void updataBonusPoint();
-void updateMemberGrade();
+void updatePlayerGrade();
 void handleInputData();
-void increasePoint(int targetId, std::string& dayOfWeek);
-void setAttendCntDaybyId(int targetId, std::string& dayOfWeek);
+void increasePoint(int targetId, string dayOfWeek);
+void setAttendCntDaybyId(int targetId, string dayOfWeek);
 bool isRemovePlayer(int i);
 void logPrintResult();
 void logPrintRemovePlayer();
+
+#endif // __ATTENDANCE_H__
