@@ -1,12 +1,12 @@
 # CRA common project
 
--[x] D1 
+-[O] D1 
 
--[x] D2
+-[O] D2
 
 -[ ] D3
 
 -[ ] D4
 
--[x] D5 (90%)
+-[O] D5 (90%)
 
