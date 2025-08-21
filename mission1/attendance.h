@@ -42,13 +42,13 @@ int attendCntWednesday[100];
 int attendCntWeekend[100];
 string arrDayOfWeek[7] = { MON, TUE, WED, THU, FRI, SAT, SUN };
 
-void setPlayerId(std::string& memberName);
+void setPlayerId(string& playerName);
 void updateRemovePlayer();
 void updataBonusPoint();
-void updateMemberGrade();
+void updatePlayerGrade();
 void handleInputData();
-void increasePoint(int targetId, std::string& dayOfWeek);
-void setAttendCntDaybyId(int targetId, std::string& dayOfWeek);
+void increasePoint(int targetId, string dayOfWeek);
+void setAttendCntDaybyId(int targetId, string& dayOfWeek);
 bool isRemovePlayer(int i);
 void logPrintResult();
 void logPrintRemovePlayer();
