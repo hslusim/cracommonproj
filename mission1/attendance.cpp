@@ -6,7 +6,7 @@ void initAttendanceData(string playerName, string dayOfWeek) {
     increasePoint(playerIdMap[playerName], dayOfWeek);
 }
 
-inline void increasePoint(int targetId, string dayOfWeek)
+void increasePoint(int targetId, string dayOfWeek)
 {
     if (targetId > playerIdCnt) {
         cout << "Invalid player ID" << endl;
@@ -24,7 +24,7 @@ inline void increasePoint(int targetId, string dayOfWeek)
     else { playerPoint[targetId] += 1; }
 }
 
-void setAttendCntDaybyId(int targetId, string& dayOfWeek)
+void setAttendCntDaybyId(int targetId, string dayOfWeek)
 {
     if (targetId > playerIdCnt) {
         cout << "Invalid player ID" << endl;
@@ -39,7 +39,7 @@ void setAttendCntDaybyId(int targetId, string& dayOfWeek)
     }
 }
 
-void setPlayerId(std::string& playerName)
+void setPlayerId(string playerName)
 {
     if (playerIdMap.count(playerName) == 0) {
         playerIdMap.insert({ playerName, ++playerIdCnt });
@@ -142,14 +142,7 @@ void handleInputData()
     }
 }
 
-int main() {
-    if (0)
-    {
-        testing::InitGoogleMock();
-        return RUN_ALL_TESTS();
-    }
-    else
-    {
-        processAttendSystem();
-    }
+int main()
+{
+    processAttendSystem();
 }
